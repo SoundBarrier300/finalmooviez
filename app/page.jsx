@@ -239,7 +239,7 @@ export default function MoviePickerApp() {
   <div className="relative group">
     <div className="text-pink-500 text-3xl cursor-pointer">🐈</div>
     <div className="absolute bottom-full mb-2 hidden group-hover:block bg-black text-[#f5ccff] text-sm px-3 py-2 rounded-xl shadow-[0_0_8px_#ff66cc]">
-      I will always try my hardest to make you happy
+      I love everything about you
     </div>
   </div>
 </div>
