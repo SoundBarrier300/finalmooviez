@@ -80,6 +80,8 @@ const movies = [
 export default function MoviePickerApp() {
   const [scrollX, setScrollX] = useState(0);
   const [selected, setSelected] = useState(null);
+  const [timeLeft, setTimeLeft] = useState({});
+
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -88,16 +90,44 @@ export default function MoviePickerApp() {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    const target = new Date("2025-05-14T19:20:00-04:00").getTime();
+    const timer = setInterval(() => {
+      const now = new Date().getTime();
+      const distance = target - now;
+
+      if (distance <= 0) {
+        setTimeLeft({ expired: true });
+        clearInterval(timer);
+      } else {
+        setTimeLeft({
+          days: Math.floor(distance / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+          minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+          seconds: Math.floor((distance % (1000 * 60)) / 1000),
+        });
+      }
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
   const totalWidth = movies.length * 180;
+  const pickRandomMovie = () => {
+  const randomIndex = Math.floor(Math.random() * movies.length);
+  setSelected(movies[randomIndex]);
+};
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0f0f0f] via-[#1b0e1e] to-[#210022] p-6 text-[#e6e6fa] font-['Unica_One',_sans-serif] overflow-x-hidden">
+
+
       <div className="max-w-6xl mx-auto bg-black/80 border border-[#6a1b9a] p-6 shadow-[0_0_40px_8px_rgba(255,0,255,0.25)] rounded-3xl backdrop-blur">
         <h1 className="text-4xl sm:text-6xl mb-12 font-black text-center text-[#ff66cc] tracking-widest uppercase drop-shadow-[0_0_8px_#ff66cc] flex items-center justify-center gap-4 px-2">
-  <span className="text-pink-500 drop-shadow-[0_0_8px_#ff66cc]">❤</span>
-  Mooviez 4 Rylee
-  <span className="text-pink-500 drop-shadow-[0_0_8px_#ff66cc]">❤</span>
-</h1>
+          <span className="text-pink-500 drop-shadow-[0_0_8px_#ff66cc]">❤</span>
+          Mooviez 4 Rylee
+          <span className="text-pink-500 drop-shadow-[0_0_8px_#ff66cc]">❤</span>
+        </h1>
 
         <div className="relative overflow-x-auto sm:overflow-hidden">
           <button onClick={() => setScrollX(scrollX - 900)} className="hidden sm:block absolute left-0 top-1/2 transform -translate-y-1/2 bg-[#7b1fa2] text-white px-3 py-2 rounded-full shadow-lg z-10 hover:bg-[#9c27b0]">‹</button>
@@ -120,9 +150,19 @@ export default function MoviePickerApp() {
           </div>
           <button onClick={() => setScrollX(scrollX + 900)} className="hidden sm:block absolute right-0 top-1/2 transform -translate-y-1/2 bg-[#7b1fa2] text-white px-3 py-2 rounded-full shadow-lg z-10 hover:bg-[#9c27b0]">›</button>
         </div>
+        <div className="flex justify-center mt-6">
+  <button
+    onClick={pickRandomMovie}
+    className="bg-[#ff66cc] hover:bg-[#ff99dd] text-white font-bold py-3 px-6 rounded-full shadow-[0_0_20px_#ff66cc] transition-all duration-300"
+  >
+    I CAN'T CHOOSE
+  </button>
+</div>
+
       </div>
+
       {selected && (
-        <div className={`mt-12 p-6 rounded-2xl max-w-3xl mx-auto shadow-[0_0_20px_rgba(255,0,255,0.4)] text-[#f3d9f9] ${
+      <div className={`mt-12 p-6 rounded-2xl max-w-3xl mx-auto shadow-[0_0_20px_rgba(255,0,255,0.4)] text-[#f3d9f9] ${
   selected.title === 'The Princess Bride' ? 'bg-[#1e1430]/90 border border-[#ff66cc]' :
   selected.title === 'The NeverEnding Story' ? 'bg-[#142c30]/90 border border-[#66ccff]' :
   selected.title === 'Labyrinth' ? 'bg-[#2a0032]/90 border border-[#cc66ff]' :
@@ -138,28 +178,72 @@ export default function MoviePickerApp() {
   ''
 }`}>
 
-          <h2 className={`text-4xl sm:text-6xl font-black text-center tracking-widest uppercase drop-shadow-[0_0_8px] px-2 mb-6 ${
-  selected.title === 'The Princess Bride' ? 'text-[#ff66cc]' :
-  selected.title === 'The NeverEnding Story' ? 'text-[#66ccff]' :
-  selected.title === 'Labyrinth' ? 'text-[#cc66ff]' :
-  selected.title === 'Borat' ? 'text-[#f4d35e]' :
-  selected.title === 'The Nightmare Before Christmas' ? 'text-[#ffffff]' :
-  selected.title === 'Dazed and Confused' ? 'text-[#ffcc00]' :
-  selected.title === 'Dead Poets Society' ? 'text-[#ff7043]' :
-  selected.title === 'Donnie Darko' ? 'text-[#66ffff]' :
-  selected.title === 'MirrorMask' ? 'text-[#ff99cc]' :
-  selected.title === 'Beetlejuice' ? 'text-[#39ff14]' :
-  selected.title === 'A Series of Unfortunate Events' ? 'text-[#b0bec5]' :
-  selected.title === 'The Addams Family' ? 'text-[#e0e0e0]' :
-  ''
-}`}>
-  {selected.title}
-</h2>
+          <h2 className={`text-4xl sm:text-6xl font-black text-center tracking-widest uppercase drop-shadow-[0_0_8px] px-2 mb-6`}>
+            {selected.title}
+          </h2>
           <p className="mb-6 text-lg leading-relaxed text-[#f5ccff]">
             {selected.description}
           </p>
-        </div>
+           </div>
       )}
+
+
+    <div className="mt-24 p-6 max-w-xl mx-auto rounded-3xl bg-black/80 border border-[#6a1b9a] shadow-[0_0_20px_rgba(255,0,255,0.4)] text-center backdrop-blur">
+      <h2 className="text-4xl sm:text-5xl font-black uppercase tracking-widest text-[#ff66cc] drop-shadow-[0_0_8px_#ff66cc] mb-4">
+        Time Until We Merge Souls
+      </h2>
+      <p className="text-2xl sm:text-3xl font-bold text-[#f5ccff] tracking-wide drop-shadow-[0_0_5px_#f5ccff]">
+        {timeLeft.expired
+          ? "Can I Please Be Your Boyfriend :3"
+          : `${timeLeft.days || 0}d ${timeLeft.hours || 0}h ${timeLeft.minutes || 0}m ${timeLeft.seconds || 0}s`}
+      </p>
     </div>
-  );
+      {/* Static Neon Hearts - Left */}
+<div className="fixed left-4 top-0 flex flex-col gap-6 z-0">
+  {Array.from({ length: 19 }).map((_, i) => (
+    <div
+      key={`left-heart-${i}`}
+      className="text-pink-500 text-5xl drop-shadow-[0_0_6px_#ff66cc]"
+    >
+      ❤
+    </div>
+  ))}
+</div>
+
+{/* Static Neon Hearts - Right */}
+<div className="fixed right-4 top-0 flex flex-col gap-6 z-0">
+  {Array.from({ length: 19 }).map((_, i) => (
+    <div
+      key={`right-heart-${i}`}
+      className="text-pink-500 text-5xl drop-shadow-[0_0_6px_#ff66cc]"
+    >
+      ❤
+    </div>
+  ))}
+</div>
+<div className="flex justify-center gap-6 mt-10">
+  <div className="relative group">
+    <div className="text-pink-500 text-3xl cursor-pointer">🐈</div>
+    <div className="absolute bottom-full mb-2 hidden group-hover:block bg-black text-[#f5ccff] text-sm px-3 py-2 rounded-xl shadow-[0_0_8px_#ff66cc]">
+      You make every day better
+    </div>
+  </div>
+
+  <div className="relative group">
+    <div className="text-pink-500 text-3xl cursor-pointer">❤</div>
+    <div className="absolute bottom-full mb-2 hidden group-hover:block bg-black text-[#f5ccff] text-sm px-3 py-2 rounded-xl shadow-[0_0_8px_#ff66cc]">
+      We were made for each other
+    </div>
+  </div>
+
+  <div className="relative group">
+    <div className="text-pink-500 text-3xl cursor-pointer">🐈</div>
+    <div className="absolute bottom-full mb-2 hidden group-hover:block bg-black text-[#f5ccff] text-sm px-3 py-2 rounded-xl shadow-[0_0_8px_#ff66cc]">
+      I will always try my hardest to make you happy
+    </div>
+  </div>
+</div>
+
+  </div> 
+);
 }
